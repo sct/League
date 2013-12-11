@@ -14,7 +14,26 @@ Using this library
 ---------
 You can install this library using composer. Learn about composer @ [getcomposer.org](http://getcomposer.org/)
 
-*Not currently up on packagist as of yet. Will be soon!*
+1) Require the package in your composer.json
+
+    "sct/league": "dev-master"
+
+2) Run Composer to install the new requirement
+
+    php composer.phar install
+or
+
+    php composer.phar update
+
+Now make sure you are using the composer autoload in your project:
+
+    require 'vendor/autoload.php';
+
+    use sct\League\Summoner;
+
+    $summoner = new Summoner("summoner", "region", "APIKEY");
+
+And thats it you are good to go. Sadly there is no documentation yet because this is nowhere near complete. Soon!
 
 License
 ---------
