@@ -125,4 +125,43 @@ class League {
 		return $request->send()->json();
 	}
 
+	/**
+	 * Request match history from the API using a Summoner ID
+	 * 
+	 * @param  integer $summonerId Summoner ID
+	 * 
+	 * @return Array             Match History Array
+	 */
+	public function getMatchHistory($summonerId)
+	{
+		$request = $this->client->get('game/by-summoner/' . $summonerId . '/recent?api_key=' . $this->key);
+		return $request->send()->json();
+	}
+
+	/**
+	 * Request Mastery pages from the API using a Summoner ID
+	 * 
+	 * @param  integer $summonerId Summoner ID
+	 * 
+	 * @return Array             Mastery Page Array
+	 */
+	public function getSummonerMastery($summonerId)
+	{
+		$request = $this->client->get('summoner/' . $summonerId . '/masteries?api_key=' . $this->key);
+		return $request->send()->json();
+	}
+
+	/**
+	 * Request Rune pages from the API using a Summoner ID
+	 * 
+	 * @param  integer $summonerId Summoner ID
+	 * 
+	 * @return Array             Rune Page Array
+	 */
+	public function getSummonerRunes($summonerId)
+	{
+		$request = $this->client->get('summoner/' . $summonerId . '/runes?api_key=' . $this->key);
+		return $request->send()->json();
+	}
+
 }

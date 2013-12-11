@@ -188,4 +188,36 @@ class Summoner {
 			return $e->getMessage();
 		}
 	}
+
+	/**
+	 * Request the current match history. Max 10 results.
+	 * @return array Match History
+	 */
+	public function getMatchHistory()
+	{
+		$matchHistory = $this->league->getMatchHistory($this->id);
+		return $matchHistory;
+	}
+
+	/**
+	 * Request all masteries for this summoner
+	 * 
+	 * @return Array Array of Masteries
+	 */
+	public function getMasteries()
+	{
+		$masteries = $this->league->getSummonerMastery($this->id);
+		return $masteries;
+	}
+
+	/**
+	 * Request all runes for this summoner
+	 * 
+	 * @return Array Array of Runes
+	 */
+	public function getRunes()
+	{
+		$runes = $this->league->getSummonerRunes($this->id);
+		return $runes;
+	}
 }
