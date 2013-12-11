@@ -8,9 +8,9 @@ Still heavily in development. Currently supports getting Summoner data and Champ
 Requirements
 ---------
 * PHP >=5.3
-* Guzzle ~3.7
+* PHP Curl Extension
 
-Using this library
+Installation
 ---------
 You can install this library using composer. Learn about composer @ [getcomposer.org](http://getcomposer.org/)
 
@@ -33,7 +33,34 @@ Now make sure you are using the composer autoload in your project:
 
     $summoner = new Summoner("summoner", "region", "APIKEY");
 
-And thats it you are good to go. Sadly there is no documentation yet because this is nowhere near complete. Soon!
+And thats it you are good to go.
+
+Usage
+---------
+
+Getting Summoner Data
+
+    $dyrus = new Summoner("Dyrus", "na", "api key");
+    
+    $dyrus->getSummonerLevel();
+    $dyrus->getStats();
+    $dyrus->getRankedStats();
+    $dyrus->getStatsForGameType(GameType::Unranked);
+    $dyrus->getStatsForChampionByName("Darius");
+    $dyrus->getMatchHistory();
+    $dyrus->getMasteries();
+    $dyrus->getRunes();
+
+Getting Champion Data
+
+    Champions::loadChampions("na", "api key");
+
+    $anivia = Champions::getChampion("Anivia");
+
+    $anivia->getActive();
+    $anivia->getRanks();
+    $anivia->getRankedPlayEnabled();
+
 
 License
 ---------
@@ -42,7 +69,6 @@ This project is licensed under the MIT License. Feel free to do whatever you wan
 Todo
 ---------
 * Implement proper exceptions for all API requests
-* Implement API calls for active game searches
 * Implement API calls for league (ranked) information. (Silver tier lists, and such)
 * Implement API calls for team information
 
