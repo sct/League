@@ -41,7 +41,7 @@ Usage
 Getting Summoner Data
 
     $dyrus = new Summoner("Dyrus", "na", "api key");
-    
+
     $dyrus->getSummonerLevel();
     $dyrus->getStats();
     $dyrus->getRankedStats();
