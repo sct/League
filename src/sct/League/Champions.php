@@ -44,15 +44,15 @@ class Champions
      */
     public static function addChampion($champion)
     {
-        $champion = new Champion($champion['id'], $champion['name']);
+        $cObject = new Champion($champion['id'], $champion['name']);
 
-        $champion->setActive($champion['active'])
+        $cObject->setActive($champion['active'])
                 ->setBotEnabled($champion['botEnabled'])
                 ->setBotMmEnabled($champion['botMmEnabled'])
                 ->setRanks($champion['attackRank'], $champion['defenseRank'], $champion['magicRank'], $champion['difficultyRank'])
                 ->setRankedPlayEnabled($champion['rankedPlayEnabled']);
 
-        self::$champions[$champion['name']] = $champion;
+        self::$champions[$champion['name']] = $cObject;
     }
 
     /**

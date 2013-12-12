@@ -2,7 +2,11 @@
 
 namespace sct\League;
 
+use sct\League\Exception\AuthenticationFailedException;
+use sct\League\Exception\SummonerDoesNotExistException;
+
 use Guzzle\Http\Client;
+use Guzzle\Http\Exception\ClientErrorResponseException;
 
 class League
 {
@@ -83,9 +87,36 @@ class League
      */
     public function getSummonerByName($name)
     {
-        $request = $this->client->get('summoner/by-name/' . $name . "?api_key=" . $this->key);
+        try {
+            $response = $this->client->get('summoner/by-name/' . $name . "?api_key=" . $this->key)->send();
 
-        return $request->send()->json();
+            return $response->json();
+        } catch (ClientErrorResponseException $e) {
+            $this->exception($e->getResponse()->getStatusCode());
+        }
+    }
+
+    /**
+     * Get summoner by ID. Option meta field for second level calls. (mastery/runes)
+     * 
+     * @param  integer $id   Summoner ID
+     * @param  string $meta Second level API call
+     * 
+     * @return array
+     */
+    public function getSummoner($id, $meta = "")
+    {
+        try {
+            if (isset($meta)) {
+                $meta = "/" . $meta;
+            }
+
+            $response = $this->client->get('summoner/' . $id . $meta .'?api_key=' . $this->key)->send();
+
+            return $response->json();
+        } catch (ClientErrorResponseException $e) {
+            $this->exception($e->getResponse()->getStatusCode());
+        }
     }
 
     /**
@@ -98,9 +129,13 @@ class League
      */
     public function getSummonerStats($summonerId, $type = "summary")
     {
-        $request = $this->client->get('stats/by-summoner/' . $summonerId . "/" . $type . "?api_key=" . $this->key);
+        try {
+            $response = $this->client->get('stats/by-summoner/' . $summonerId . "/" . $type . "?api_key=" . $this->key)->send();
 
-        return $request->send()->json();
+            return $response->json();
+        } catch (ClientErrorResponseException $e) {
+            $this->exception($e->getResponse()->getStatusCode());
+        }
     }
 
     /**
@@ -123,9 +158,13 @@ class League
      */
     public function getChampions()
     {
-        $request =  $this->client->get('champion?api_key=' .  $this->key);
+        try {
+            $response = $this->client->get('champion?api_key=' .  $this->key)->send();
 
-        return $request->send()->json();
+            return $response->json();
+        } catch (ClientErrorResponseException $e) {
+            $this->exception($e->getResponse()->getStatusCode());
+        }
     }
 
     /**
@@ -137,9 +176,13 @@ class League
      */
     public function getMatchHistory($summonerId)
     {
-        $request = $this->client->get('game/by-summoner/' . $summonerId . '/recent?api_key=' . $this->key);
+        try {
+            $response = $this->client->get('game/by-summoner/' . $summonerId . '/recent?api_key=' . $this->key)->send();
 
-        return $request->send()->json();
+            return $response->json();
+        } catch (ClientErrorResponseException $e) {
+            $this->exception($e->getResponse()->getStatusCode());
+        }
     }
 
     /**
@@ -151,9 +194,7 @@ class League
      */
     public function getSummonerMastery($summonerId)
     {
-        $request = $this->client->get('summoner/' . $summonerId . '/masteries?api_key=' . $this->key);
-
-        return $request->send()->json();
+        return $this->getSummoner($summonerId, "masteries");
     }
 
     /**
@@ -165,9 +206,26 @@ class League
      */
     public function getSummonerRunes($summonerId)
     {
-        $request = $this->client->get('summoner/' . $summonerId . '/runes?api_key=' . $this->key);
+       return $this->getSummoner($summonerId, "runes");
+    }
 
-        return $request->send()->json();
+    /**
+     * Throw exceptions based on the response code
+     * 
+     * @param  integer $responseCode Response code returned from request
+     * 
+     * @return Exception
+     */
+    private function exception($responseCode)
+    {
+        switch ($responseCode) {
+            case 404:
+                throw new SummonerDoesNotExistException('Summoner does not exist');
+            case 401:
+                throw new AuthenticationFailedException('Failed to authenticate key with API');
+            default:
+                throw new RuntimeException('An unknown error occured during this request');
+        }
     }
 
 }

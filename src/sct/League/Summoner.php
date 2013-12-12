@@ -3,6 +3,7 @@
 namespace sct\League;
 
 use sct\League\Common\GameType;
+use sct\League\Exception\SummonerDoesNotExistException;
 use sct\League\Exception\ChampionDoesNotExistException;
 
 class Summoner
@@ -57,22 +58,40 @@ class Summoner
     private $revisionDateStr;
 
     /**
+     * Array to store gametype stats. Can be preloaded through the constructor
+     * 
+     * @var array
+     */
+    public $stats;
+
+    /**
      * Create a new instance of the Summoner class
      *
      * @param string $name   Summoner Name
      * @param string $region Region to search in
      * @param string $key    League API Key
+     * @param boolean $preload Flag to preload stat data
      */
-    public function __construct($name, $region, $key)
+    public function __construct($name, $region, $key, $preload = false)
     {
-        $this->league          = new League($key, $region);
-        $summoner              = $this->league->getSummonerByName($name);
-        $this->id              = $summoner['id'];
-        $this->name            = $summoner['name'];
-        $this->profileIconId   = $summoner['profileIconId'];
-        $this->summonerLevel   = $summoner['summonerLevel'];
-        $this->revisionDate    = $summoner['revisionDate'];
-        $this->revisionDateStr = $summoner['revisionDateStr'];
+        $this->league = new League($key, $region);
+
+        try {
+            $summoner              = $this->league->getSummonerByName($name);
+            $this->id              = $summoner['id'];
+            $this->name            = $summoner['name'];
+            $this->profileIconId   = $summoner['profileIconId'];
+            $this->summonerLevel   = $summoner['summonerLevel'];
+            $this->revisionDate    = $summoner['revisionDate'];
+            $this->revisionDateStr = $summoner['revisionDateStr'];
+
+            if ($preload) {
+                $this->preloadStats();
+            }
+        } catch (SummonerDoesNotExistException $e) {
+            return null;
+        }
+        
     }
 
     /**
@@ -93,6 +112,16 @@ class Summoner
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Returns the profile icon ID
+     * 
+     * @return integer
+     */
+    public function getProfileIconId()
+    {
+        return $this->profileIconId;
     }
 
     /**
@@ -124,17 +153,17 @@ class Summoner
      *
      * @return Array
      */
-    public function getStatsForGameType($gametype = GameType::AramUnranked5x5)
+    public function getStatsForGameType($gametype = GameType::Unranked)
     {
-        $stats = $this->getStats();
-
-        foreach ($stats['playerStatSummaries'] as $summary) {
-            if ($summary['playerStatSummaryType'] == $gametype) {
-                return $summary;
-            }
+        if (empty($stats)) {
+            $this->preloadStats();
         }
 
-        return null;
+        if (array_key_exists($gametype, $this->stats)) {
+            return $this->stats[$gametype];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -223,5 +252,18 @@ class Summoner
         $runes = $this->league->getSummonerRunes($this->id);
 
         return $runes;
+    }
+
+    /**
+     * Preloads the stats array with gametype data
+     */
+    private function preloadStats()
+    {
+        $stats = $this->getStats();
+
+        $this->stats = array();
+        foreach ($stats['playerStatSummaries'] as $gametype) {
+            $this->stats[$gametype['playerStatSummaryType']] = new GameType($this, $gametype);
+        }
     }
 }
