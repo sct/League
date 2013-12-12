@@ -155,7 +155,7 @@ class Summoner
      */
     public function getStatsForGameType($gametype = GameType::Unranked)
     {
-        if (empty($stats)) {
+        if (empty($this->stats)) {
             $this->preloadStats();
         }
 
