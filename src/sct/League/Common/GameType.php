@@ -139,12 +139,14 @@ class GameType
     	$this->losses = $stats['losses'];
     	$this->modifyDate = $stats['modifyDate'];
         
-        foreach ($stats['aggregatedStats'] as $stat) {
-            $this->stats[$stat['name']] = array(
-                                                "id"    => $stat['id'],
-                                                "name"  => $stat['name'],
-                                                "count" => $stat['count']
-                                                );
+        if (isset($stats['aggregatedStats'])) {
+            foreach ($stats['aggregatedStats'] as $stat) {
+                $this->stats[$stat['name']] = array(
+                                                    "id"    => $stat['id'],
+                                                    "name"  => $stat['name'],
+                                                    "count" => $stat['count']
+                                                    );
+            }
         }
     }
 }
