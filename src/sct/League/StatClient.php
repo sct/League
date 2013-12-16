@@ -8,8 +8,14 @@ use sct\League\Exception\SummonerDoesNotExistException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 
-class League
+class StatClient
 {
+
+    const RIOT_API_1    = "http://prod.api.pvp.net/api/lol/";
+    const RIOT_API_2    = "http://prod.api.pvp.net/api/";
+    const API_VERSION_1 = "v1.1";
+    const API_VERSION_2 = "v2.1";
+
     /**
      * Riot League of Legends API Key
      *
@@ -25,11 +31,18 @@ class League
     private $region;
 
     /**
-     * Instance of Guzzle Client
+     * Instance of Guzzle Client for API Version 1
      *
-     * @var Object
+     * @var object
      */
     private $client;
+
+    /**
+     * Instance of Guzzle Client for API Version 2
+     *
+     * @var object
+     */
+    private $clientTwo;
 
     /**
      * Create instance of League object to work with the API
@@ -39,9 +52,10 @@ class League
      */
     public function __construct($key, $region = "na")
     {
-        $this->key    = $key;
+        $this->key = $key;
         $this->region = $region;
-        $this->client = new Client("http://prod.api.pvp.net/api/lol/" . $this->region . "/v1.1/");
+        $this->client = new Client(self::RIOT_API_1 . $this->region . "/" . self::API_VERSION_1);
+        $this->clientTwo = new Client(self::RIOT_API_2 . $this->region . "/" . self::API_VERSION_2);
     }
 
     /**
@@ -207,6 +221,18 @@ class League
     public function getSummonerRunes($summonerId)
     {
        return $this->getSummoner($summonerId, "runes");
+    }
+
+    public function getSummonerLeague($summonerId)
+    {
+        try {
+            $response = $this->clientTwo->get('league/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
+
+            return $response->json();
+        } catch (ClientErrorResponseException $e) {
+            $this->exception($e->getResponse()->getStatusCode());
+        }
+            
     }
 
     /**

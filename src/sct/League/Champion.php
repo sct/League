@@ -40,6 +40,13 @@ class Champion
     private $botMmEnabled;
 
     /**
+     * Indicates if the champion is free to play
+     * 
+     * @var boolean
+     */
+    private $freeToPlay;
+
+    /**
      * Array of ranks for each stat type for this champion
      *
      * @var array
@@ -151,6 +158,28 @@ class Champion
     public function getBotMmEnabled()
     {
         return $this->botMmEnabled;
+    }
+
+    /**
+     * Set the flag indiciating if this champion is currently free to play
+     * 
+     * @param boolean $freeToPlay
+     */
+    public function setFreeToPlay($freeToPlay)
+    {
+        $this->freeToPlay = $freeToPlay;
+
+        return $this;
+    }
+
+    /**
+     * Returns the boolean indicating if the champion is free to play
+     * 
+     * @return boolean
+     */
+    public function getFreeToPlay()
+    {
+        return $this->freeToPlay;
     }
 
     /**

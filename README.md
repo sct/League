@@ -68,8 +68,6 @@ This project is licensed under the MIT License. Feel free to do whatever you wan
 
 Todo
 ---------
-* Implement proper exceptions for all API requests
-* Implement API calls for league (ranked) information. (Silver tier lists, and such)
 * Implement API calls for team information
 
 *This product is not endorsed, certified or otherwise approved in any way by Riot Games, Inc. or any of its affiliates.*

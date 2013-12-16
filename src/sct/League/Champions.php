@@ -27,8 +27,8 @@ class Champions
      */
     public static function loadChampions($region, $key)
     {
-        $league    = new League($key, $region);
-        $champions = $league->getChampions();
+        $client    = new StatClient($key, $region);
+        $champions = $client->getChampions();
 
         foreach ($champions['champions'] as $champion) {
             self::addChampion($champion);
@@ -49,6 +49,7 @@ class Champions
         $cObject->setActive($champion['active'])
                 ->setBotEnabled($champion['botEnabled'])
                 ->setBotMmEnabled($champion['botMmEnabled'])
+                ->setFreeToPlay($champion['freeToPlay'])
                 ->setRanks($champion['attackRank'], $champion['defenseRank'], $champion['magicRank'], $champion['difficultyRank'])
                 ->setRankedPlayEnabled($champion['rankedPlayEnabled']);
 

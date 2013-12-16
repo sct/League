@@ -3,17 +3,18 @@
 namespace sct\League;
 
 use sct\League\Common\GameType;
+use sct\League\League\League;
 use sct\League\Exception\SummonerDoesNotExistException;
 use sct\League\Exception\ChampionDoesNotExistException;
 
 class Summoner
 {
     /**
-     * Instance of the League object. Used for base API calls.
+     * Instance of the Client object. Used for base API calls.
      *
-     * @var League
+     * @var object
      */
-    private $league;
+    private $client;
 
     /**
      * Summoner Id
@@ -74,10 +75,10 @@ class Summoner
      */
     public function __construct($name, $region, $key, $preload = false)
     {
-        $this->league = new League($key, $region);
+        $this->client = new StatClient($key, $region);
 
         try {
-            $summoner              = $this->league->getSummonerByName($name);
+            $summoner              = $this->client->getSummonerByName($name);
             $this->id              = $summoner['id'];
             $this->name            = $summoner['name'];
             $this->profileIconId   = $summoner['profileIconId'];
@@ -143,7 +144,7 @@ class Summoner
      */
     public function getStats($type = "summary")
     {
-        return $this->league->getSummonerStats($this->id, $type);
+        return $this->client->getSummonerStats($this->id, $type);
     }
 
     /**
@@ -207,7 +208,7 @@ class Summoner
     public function getStatsForChampionByName($name)
     {
         if (!Champions::isLoaded()) {
-            Champions::loadChampions($this->league->getRegion(), $this->league->getKey());
+            Champions::loadChampions($this->client->getRegion(), $this->client->getKey());
         }
 
         try {
@@ -225,7 +226,7 @@ class Summoner
      */
     public function getMatchHistory()
     {
-        $matchHistory = $this->league->getMatchHistory($this->id);
+        $matchHistory = $this->client->getMatchHistory($this->id);
 
         return $matchHistory;
     }
@@ -237,7 +238,7 @@ class Summoner
      */
     public function getMasteries()
     {
-        $masteries = $this->league->getSummonerMastery($this->id);
+        $masteries = $this->client->getSummonerMastery($this->id);
 
         return $masteries;
     }
@@ -249,9 +250,14 @@ class Summoner
      */
     public function getRunes()
     {
-        $runes = $this->league->getSummonerRunes($this->id);
+        $runes = $this->client->getSummonerRunes($this->id);
 
         return $runes;
+    }
+
+    public function getLeague()
+    {
+        return new League($this->id, $this->client->getSummonerLeague($this->id));
     }
 
     /**
