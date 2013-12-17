@@ -97,7 +97,7 @@ class StatClient
      *
      * @param string $name Summoner Name
      *
-     * @return Array Summoner Array
+     * @return array Summoner Array
      */
     public function getSummonerByName($name)
     {
@@ -139,7 +139,7 @@ class StatClient
      * @param integer $summonerId Summoner ID
      * @param string  $type       Type of request. summary/ranked
      *
-     * @return Array Array of requested data
+     * @return array Array of requested data
      */
     public function getSummonerStats($summonerId, $type = "summary")
     {
@@ -158,7 +158,7 @@ class StatClient
      * @param string $name Summoner Name
      * @param string $type Type of Request. summary/ranked
      *
-     * @return Array Array of requested data
+     * @return array Array of requested data
      */
     public function getSummonerStatsByName($name, $type = "summary")
     {
@@ -168,7 +168,7 @@ class StatClient
     /**
      * Request Champions
      *
-     * @return Array Champion Array
+     * @return array Champion Array
      */
     public function getChampions()
     {
@@ -186,7 +186,7 @@ class StatClient
      *
      * @param integer $summonerId Summoner ID
      *
-     * @return Array Match History Array
+     * @return array Match History Array
      */
     public function getMatchHistory($summonerId)
     {
@@ -204,7 +204,7 @@ class StatClient
      *
      * @param integer $summonerId Summoner ID
      *
-     * @return Array Mastery Page Array
+     * @return array Mastery Page Array
      */
     public function getSummonerMastery($summonerId)
     {
@@ -216,13 +216,20 @@ class StatClient
      *
      * @param integer $summonerId Summoner ID
      *
-     * @return Array Rune Page Array
+     * @return array Rune Page Array
      */
     public function getSummonerRunes($summonerId)
     {
        return $this->getSummoner($summonerId, "runes");
     }
 
+    /**
+     * Request a Summoners league information
+     * 
+     * @param  integer $summonerId Summoner ID
+     * 
+     * @return array
+     */
     public function getSummonerLeague($summonerId)
     {
         try {
@@ -233,6 +240,24 @@ class StatClient
             $this->exception($e->getResponse()->getStatusCode());
         }
             
+    }
+
+    /**
+     * Request a summoners team information
+     * 
+     * @param  integer $summonerId Summoner ID
+     * 
+     * @return array
+     */
+    public function getSummonerTeam($summonerId)
+    {
+        try {
+            $response = $this->clientTwo->get('team/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
+
+            return $response->json();
+        } catch (ClientErrorResponseException $e) {
+            $this->exception($e->getResponse()->getStatusCode());
+        }
     }
 
     /**

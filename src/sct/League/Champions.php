@@ -3,6 +3,7 @@
 namespace sct\League;
 
 use sct\League\Exception\ChampionDoesNotExistException;
+use sct\League\Exception\ChampionsNotLoadedException;
 
 class Champions
 {
@@ -91,5 +92,28 @@ class Champions
     public static function isLoaded()
     {
         return self::$isLoaded;
+    }
+
+    /**
+     * Returns an array with the currently free champions. Champions must be 
+     * loaded before this is called
+     * 
+     * @return array Array of free champions
+     */
+    public static function getFreeChampions()
+    {
+        if (!self::isLoaded()) {
+            throw new ChampionsNotLoadedException('Champions must be loaded before requesting free champions');
+        }
+
+        $freeChampions = array();
+
+        foreach (self::getChampions() as $champion) {
+            if ($champion->getFreeToPlay()) {
+                array_push($freeChampions, $champion);
+            }
+        }
+
+        return $freeChampions;
     }
 }

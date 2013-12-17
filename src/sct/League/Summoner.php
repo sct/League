@@ -4,6 +4,7 @@ namespace sct\League;
 
 use sct\League\Common\GameType;
 use sct\League\League\League;
+use sct\League\Team\Team;
 use sct\League\Exception\SummonerDoesNotExistException;
 use sct\League\Exception\ChampionDoesNotExistException;
 
@@ -64,6 +65,13 @@ class Summoner
      * @var array
      */
     public $stats;
+
+    /**
+     * Array to store team information
+     * 
+     * @var array
+     */
+    public $teams;
 
     /**
      * Create a new instance of the Summoner class
@@ -255,9 +263,41 @@ class Summoner
         return $runes;
     }
 
+    /**
+     * Returns a League object with the summoners league information
+     * 
+     * @return object
+     */
     public function getLeague()
     {
         return new League($this->id, $this->client->getSummonerLeague($this->id));
+    }
+
+    /**
+     * Returns the teams array. Loads teams from the API if not already loaded
+     * 
+     * @return array
+     */
+    public function getTeams()
+    {
+        if (empty($this->teams)) {
+            $this->loadTeams();
+        }
+        
+        return $this->teams;
+    }
+
+    /**
+     * Loads teams from the API
+     */
+    public function loadTeams()
+    {
+        $teams = $this->client->getSummonerTeam($this->id);
+
+        $this->teams = array();
+        foreach ($teams as $team) {
+            array_push($this->teams, new Team($team));
+        }
     }
 
     /**

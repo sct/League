@@ -51,6 +51,10 @@ Getting Summoner Data
     $dyrus->getMasteries();
     $dyrus->getRunes();
 
+    // New Methods
+    $dyrus->getLeague();
+    $dyrus->getTeams();
+
 Getting Champion Data
 
     Champions::loadChampions("na", "api key");
@@ -60,6 +64,7 @@ Getting Champion Data
     $anivia->getActive();
     $anivia->getRanks();
     $anivia->getRankedPlayEnabled();
+    $anivia->getFreeToPlay();
 
 
 License
@@ -68,6 +73,6 @@ This project is licensed under the MIT License. Feel free to do whatever you wan
 
 Todo
 ---------
-* Implement API calls for team information
+* Flesh out the Team/League object models
 
 *This product is not endorsed, certified or otherwise approved in any way by Riot Games, Inc. or any of its affiliates.*
