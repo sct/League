@@ -4,7 +4,7 @@ namespace sct\League\Team;
 
 class Team
 {
-	private $teamId;
+	private $fullId;
 	private $matchHistory;
 	private $messageOfDay;
 	private $roster;

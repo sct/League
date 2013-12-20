@@ -53,13 +53,6 @@ class Summoner
     private $revisionDate;
 
     /**
-     * Summoner revision date represented as a string
-     *
-     * @var string
-     */
-    private $revisionDateStr;
-
-    /**
      * Array to store gametype stats. Can be preloaded through the constructor
      * 
      * @var array
@@ -92,7 +85,6 @@ class Summoner
             $this->profileIconId   = $summoner['profileIconId'];
             $this->summonerLevel   = $summoner['summonerLevel'];
             $this->revisionDate    = $summoner['revisionDate'];
-            $this->revisionDateStr = $summoner['revisionDateStr'];
 
             if ($preload) {
                 $this->preloadStats();
@@ -144,15 +136,29 @@ class Summoner
     }
 
     /**
+     * Returns the revision date
+     * 
+     * @return integer
+     */
+    public function getRevisionDate()
+    {
+        return $this->revisionDate;
+    }
+
+    /**
      * Returns the raw Stats response from the API
      *
      * @param string $type Type of stats to request. (summary or ranked)
      *
      * @return Array Array of the stats object
      */
-    public function getStats($type = "summary")
+    public function getStats()
     {
-        return $this->client->getSummonerStats($this->id, $type);
+        if (empty($this->stats)) {
+            $this->preloadStats();
+        }
+
+        return $this->stats;
     }
 
     /**
@@ -182,7 +188,7 @@ class Summoner
      */
     public function getRankedStats()
     {
-        return $this->getStats("ranked");
+        return $this->client->getSummonerStats($this->id, "ranked");
     }
 
     /**
@@ -305,8 +311,7 @@ class Summoner
      */
     private function preloadStats()
     {
-        $stats = $this->getStats();
-
+        $stats = $this->client->getSummonerStats($this->id, "summary");
         $this->stats = array();
         foreach ($stats['playerStatSummaries'] as $gametype) {
             $this->stats[$gametype['playerStatSummaryType']] = new GameType($this, $gametype);

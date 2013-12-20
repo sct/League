@@ -7,11 +7,16 @@ class GameType
     const AramUnranked5x5 	= "AramUnranked5x5";
     const CoopVsAI 			= "CoopVsAI";
     const OdinUnranked		= "OdinUranked";
+    const RankedPremade3x3  = "RankedPremade3x3";
+    const RankedPremade5x5  = "RankedPremade5x5";
     const RankedSolo5x5		= "RankedSolo5x5";
     const RankedTeam3x3		= "RankedTeam3x3";
     const RankedTeam5x5		= "RankedTeam5x5";
     const Unranked 			= "Unranked";
     const Unranked3x3		= "Unranked3x3";
+    const OneForAll5x5      = "OneForAll5x5";
+    const FirstBlood1x1     = "FirstBlood1x1";
+    const FirstBlood2x2     = "FirstBlood2x2";
 
     /**
      * Reference to the summoner this GameType belongs to
@@ -25,7 +30,7 @@ class GameType
      * 
      * @var string
      */
-    private $type;
+    private $playerStatSummaryType;
 
     /**
      * Number of wins
@@ -53,7 +58,7 @@ class GameType
      * 
      * @var array
      */
-    private $stats = array();
+    private $aggregatedStats = array();
 
     /**
      * Create the GameType object with reference to summoner and stats array
@@ -61,10 +66,20 @@ class GameType
      * @param object $summoner Summoner Object
      * @param array $stats    Stats Array
      */
-    public function __construct(&$summoner, &$stats)
+    public function __construct(&$summoner, &$properties)
     {
-    	$this->summoner = $summoner;
-    	$this->loadStats($stats);
+    	//$this->summoner = $summoner;
+
+    	foreach ($properties as $key => $value) {
+            if ($key != "aggregatedStats") {
+                if (empty($value)) {
+                    $value = 0;
+                }
+                $this->{$key} = $value;
+            } else {
+                $this->aggregatedStats = new AggregatedStats($value);
+            }
+        }
     }
 
     /**
@@ -124,29 +139,6 @@ class GameType
      */
     public function getStats()
     {
-        return $this->stats;
-    }
-
-    /**
-     * Take the reference of the stats array and loads the object and stats array
-     * 
-     * @param  array $stats
-     */
-    private function loadStats($stats)
-    {
-    	$this->type = $stats['playerStatSummaryType'];
-    	$this->wins = $stats['wins'];
-    	$this->losses = $stats['losses'];
-    	$this->modifyDate = $stats['modifyDate'];
-        
-        if (isset($stats['aggregatedStats'])) {
-            foreach ($stats['aggregatedStats'] as $stat) {
-                $this->stats[$stat['name']] = array(
-                                                    "id"    => $stat['id'],
-                                                    "name"  => $stat['name'],
-                                                    "count" => $stat['count']
-                                                    );
-            }
-        }
+        return $this->aggregatedStats;
     }
 }

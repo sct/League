@@ -11,9 +11,8 @@ use Guzzle\Http\Exception\ClientErrorResponseException;
 class StatClient
 {
 
-    const RIOT_API_1    = "http://prod.api.pvp.net/api/lol/";
-    const RIOT_API_2    = "http://prod.api.pvp.net/api/";
-    const API_VERSION_1 = "v1.1";
+    const RIOT_API      = "http://prod.api.pvp.net/api/lol/";
+    const API_VERSION_1 = "v1.2";
     const API_VERSION_2 = "v2.1";
 
     /**
@@ -54,8 +53,7 @@ class StatClient
     {
         $this->key = $key;
         $this->region = $region;
-        $this->client = new Client(self::RIOT_API_1 . $this->region . "/" . self::API_VERSION_1);
-        $this->clientTwo = new Client(self::RIOT_API_2 . $this->region . "/" . self::API_VERSION_2);
+        $this->client = new Client(self::RIOT_API . $this->region);
     }
 
     /**
@@ -102,8 +100,8 @@ class StatClient
     public function getSummonerByName($name)
     {
         try {
-            $response = $this->client->get('summoner/by-name/' . $name . "?api_key=" . $this->key)->send();
-
+            $response = $this->client->get('v1.2/summoner/by-name/' . $name . "?api_key=" . $this->key)->send();
+            
             return $response->json();
         } catch (ClientErrorResponseException $e) {
             $this->exception($e->getResponse()->getStatusCode());
@@ -125,7 +123,7 @@ class StatClient
                 $meta = "/" . $meta;
             }
 
-            $response = $this->client->get('summoner/' . $id . $meta .'?api_key=' . $this->key)->send();
+            $response = $this->client->get('v1.2/summoner/' . $id . $meta .'?api_key=' . $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
@@ -144,7 +142,7 @@ class StatClient
     public function getSummonerStats($summonerId, $type = "summary")
     {
         try {
-            $response = $this->client->get('stats/by-summoner/' . $summonerId . "/" . $type . "?api_key=" . $this->key)->send();
+            $response = $this->client->get('v1.2/stats/by-summoner/' . $summonerId . "/" . $type . "?api_key=" . $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
@@ -173,7 +171,7 @@ class StatClient
     public function getChampions()
     {
         try {
-            $response = $this->client->get('champion?api_key=' .  $this->key)->send();
+            $response = $this->client->get('v1.1/champion?api_key=' .  $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
@@ -191,7 +189,7 @@ class StatClient
     public function getMatchHistory($summonerId)
     {
         try {
-            $response = $this->client->get('game/by-summoner/' . $summonerId . '/recent?api_key=' . $this->key)->send();
+            $response = $this->client->get('v1.2/game/by-summoner/' . $summonerId . '/recent?api_key=' . $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
@@ -233,7 +231,7 @@ class StatClient
     public function getSummonerLeague($summonerId)
     {
         try {
-            $response = $this->clientTwo->get('league/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
+            $response = $this->client->get('v2.2/league/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
@@ -252,7 +250,7 @@ class StatClient
     public function getSummonerTeam($summonerId)
     {
         try {
-            $response = $this->clientTwo->get('team/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
+            $response = $this->client->get('v2.2/team/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
