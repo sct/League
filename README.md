@@ -74,5 +74,6 @@ This project is licensed under the MIT License. Feel free to do whatever you wan
 Todo
 ---------
 * Flesh out the Team/League object models
+* Update API calls to 1.2 and 2.2
 
 *This product is not endorsed, certified or otherwise approved in any way by Riot Games, Inc. or any of its affiliates.*

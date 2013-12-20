@@ -26,13 +26,6 @@ class League
 	public $tier;
 
 	/**
-	 * Timestamp
-	 * 
-	 * @var string
-	 */
-	public $timestamp;
-
-	/**
 	 * Array containing LeagueEntry objects
 	 * 
 	 * @var array
@@ -51,7 +44,6 @@ class League
 		$this->name = $league['name'];
 		$this->queue = $league['queue'];
 		$this->tier = $league['tier'];
-		$this->timestamp = $league['timestamp'];
 		$this->loadEntries($league['entries']);
 	}
 
