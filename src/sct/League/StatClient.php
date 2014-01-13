@@ -189,7 +189,7 @@ class StatClient
     public function getMatchHistory($summonerId)
     {
         try {
-            $response = $this->client->get('v1.2/game/by-summoner/' . $summonerId . '/recent?api_key=' . $this->key)->send();
+            $response = $this->client->get('v1.3/game/by-summoner/' . $summonerId . '/recent?api_key=' . $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
