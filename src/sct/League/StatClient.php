@@ -100,8 +100,12 @@ class StatClient
     public function getSummonerByName($name)
     {
         try {
-            $response = $this->client->get('v1.2/summoner/by-name/' . $name . "?api_key=" . $this->key)->send();
-            
+            if (is_array($name)) {
+                $name = implode(",", $name);
+            }
+
+            $response = $this->client->get('v1.3/summoner/by-name/' . $name . "?api_key=" . $this->key)->send();
+
             return $response->json();
         } catch (ClientErrorResponseException $e) {
             $this->exception($e->getResponse()->getStatusCode());
@@ -111,7 +115,7 @@ class StatClient
     /**
      * Get summoner by ID. Option meta field for second level calls. (mastery/runes)
      * 
-     * @param  integer $id   Summoner ID
+     * @param  integer/array $id   Summoner ID (or IDs in an array)
      * @param  string $meta Second level API call
      * 
      * @return array
@@ -122,8 +126,10 @@ class StatClient
             if (isset($meta)) {
                 $meta = "/" . $meta;
             }
-
-            $response = $this->client->get('v1.2/summoner/' . $id . $meta .'?api_key=' . $this->key)->send();
+            if (is_array($id)) {
+                $id = implode(",", $id);
+            }
+            $response = $this->client->get('v1.3/summoner/' . $id . $meta .'?api_key=' . $this->key)->send();
 
             return $response->json();
         } catch (ClientErrorResponseException $e) {
