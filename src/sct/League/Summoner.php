@@ -15,7 +15,7 @@ class Summoner
      *
      * @var object
      */
-    private $client;
+    public static $client;
 
     /**
      * Summoner Id
@@ -67,32 +67,55 @@ class Summoner
     public $teams;
 
     /**
-     * Create a new instance of the Summoner class
+     * Summoner Factory
      *
-     * @param string $name   Summoner Name
-     * @param string $region Region to search in
-     * @param string $key    League API Key
-     * @param boolean $preload Flag to preload stat data
+     * Creates summoner objects. You can request multiple summoners by passing an array
+     * in for the $summoner value. 
+     *
+     * Usage: Summoner::factory(array("Dyrus", "Xpecial"), "na", "api_key", true)
+     *
+     * Returns an array of summoners if multiple summoners requests. Returns just a
+     * single summoner object is only one summoner is requested.
+     * 
+     * @param  string/array  $summoner String or array of summoners
+     * @param  string  $region   Region
+     * @param  string  $key      API Key
+     * @param  boolean $preload  Set to true to preload stat values for summoners
+     * @return array/Summoner            Returns an array or summoner
      */
-    public function __construct($name, $region, $key, $preload = false)
+    public static function factory($summoner, $region, $key, $preload = false)
     {
-        $this->client = new StatClient($key, $region);
-
-        try {
-            $summoner              = $this->client->getSummonerByName($name);
-            $this->id              = $summoner['id'];
-            $this->name            = $summoner['name'];
-            $this->profileIconId   = $summoner['profileIconId'];
-            $this->summonerLevel   = $summoner['summonerLevel'];
-            $this->revisionDate    = $summoner['revisionDate'];
-
-            if ($preload) {
-                $this->preloadStats();
-            }
-        } catch (SummonerDoesNotExistException $e) {
-            return null;
+        if (empty($client)) {
+            self::$client = new StatClient($key, $region);
         }
-        
+
+        if (is_array($summoner)) {
+            $summoners = array();
+            $sArray = self::$client->getSummonerByName($summoner);
+            foreach ($sArray as $name => $sum) {
+                $summoners[$name] = new Summoner($sum, $preload);
+            }
+
+            return $summoners;
+        } else {
+            return new Summoner(self::$client->getSummonerByName($summoner), $preload);
+        }
+    }
+
+    /**
+     * Summoner constructor. Maps properties to class fields
+     * @param array  $properties Summoner properties
+     * @param boolean $preload    Preload summoner stats
+     */
+    public function __construct($properties, $preload = false)
+    {
+        foreach ($properties as $key => $value) {
+            $this->{$key} = $value;
+        }
+
+        if ($preload) {
+            $this->preloadStats();
+        }
     }
 
     /**
@@ -188,7 +211,7 @@ class Summoner
      */
     public function getRankedStats()
     {
-        return $this->client->getSummonerStats($this->id, "ranked");
+        return self::$client->getSummonerStats($this->id, "ranked");
     }
 
     /**
@@ -222,7 +245,7 @@ class Summoner
     public function getStatsForChampionByName($name)
     {
         if (!Champions::isLoaded()) {
-            Champions::loadChampions($this->client->getRegion(), $this->client->getKey());
+            Champions::loadChampions(self::$client->getRegion(), self::$client->getKey());
         }
 
         try {
@@ -240,7 +263,7 @@ class Summoner
      */
     public function getMatchHistory()
     {
-        $matchHistory = $this->client->getMatchHistory($this->id);
+        $matchHistory = self::$client->getMatchHistory($this->id);
 
         return $matchHistory;
     }
@@ -252,7 +275,7 @@ class Summoner
      */
     public function getMasteries()
     {
-        $masteries = $this->client->getSummonerMastery($this->id);
+        $masteries = self::$client->getSummonerMastery($this->id);
 
         return $masteries;
     }
@@ -264,7 +287,7 @@ class Summoner
      */
     public function getRunes()
     {
-        $runes = $this->client->getSummonerRunes($this->id);
+        $runes = self::$client->getSummonerRunes($this->id);
 
         return $runes;
     }
@@ -276,7 +299,7 @@ class Summoner
      */
     public function getLeague()
     {
-        return new League($this->id, $this->client->getSummonerLeague($this->id));
+        return new League($this->id, self::$client->getSummonerLeague($this->id));
     }
 
     /**
@@ -298,7 +321,7 @@ class Summoner
      */
     public function loadTeams()
     {
-        $teams = $this->client->getSummonerTeam($this->id);
+        $teams = self::$client->getSummonerTeam($this->id);
 
         $this->teams = array();
         foreach ($teams as $team) {
@@ -311,7 +334,7 @@ class Summoner
      */
     private function preloadStats()
     {
-        $stats = $this->client->getSummonerStats($this->id, "summary");
+        $stats = self::$client->getSummonerStats($this->id, "summary");
         $this->stats = array();
         foreach ($stats['playerStatSummaries'] as $gametype) {
             $this->stats[$gametype['playerStatSummaryType']] = new GameType($this, $gametype);

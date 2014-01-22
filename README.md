@@ -35,12 +35,23 @@ Now make sure you are using the composer autoload in your project:
 
 And thats it you are good to go.
 
+Changes
+---------
+
+In version 1.4 the Summoner constructor was changed. You should use the factory method in Summoner to create Summoner objects. The factory supports requesting mulitple Summoners with one request.
+
+Example Usage for multiple summoners
+
+    $summoners = Summoner::factory(array("Dyrus", "Xpecial"), "na", "api_key");
+
+    $summoners['Dyrus']->getSummonerLevel();
+
 Usage
 ---------
 
 Getting Summoner Data
 
-    $dyrus = new Summoner("Dyrus", "na", "api key");
+    $dyrus = Summoner::factory("Dyrus", "na", "api_key");
 
     $dyrus->getSummonerLevel();
     $dyrus->getStats();
@@ -71,9 +82,6 @@ License
 ---------
 This project is licensed under the MIT License. Feel free to do whatever you want with it.
 
-Todo
----------
-* Flesh out the Team/League object models
-* Update API calls to 1.2 and 2.2
+If you do use this project, it would be great if you could add credit (although you don't have to!) Also I would love to see where and how you are using the project, so send me a message and let me know where I can check it out!
 
 *This product is not endorsed, certified or otherwise approved in any way by Riot Games, Inc. or any of its affiliates.*
