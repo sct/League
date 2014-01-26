@@ -67,6 +67,13 @@ class Summoner
     public $teams;
 
     /**
+     * Array to store league information
+     * 
+     * @var array
+     */
+    public $leagues;
+
+    /**
      * Summoner Factory
      *
      * Creates summoner objects. You can request multiple summoners by passing an array
@@ -98,7 +105,8 @@ class Summoner
 
             return $summoners;
         } else {
-            return new Summoner(self::$client->getSummonerByName($summoner), $preload);
+            $sum = self::$client->getSummonerByName($summoner);
+            return new Summoner($sum[strtolower(str_replace(" ", "", $summoner))], $preload);
         }
     }
 
@@ -294,12 +302,36 @@ class Summoner
 
     /**
      * Returns a League object with the summoners league information
+     *
+     * @deprecated As of version 2.3 of the League API multiple leagues are
+     * now returned. Please use getLeagues() now instead.
      * 
      * @return object
      */
     public function getLeague()
     {
-        return new League($this->id, self::$client->getSummonerLeague($this->id));
+        $league = self::$client->getSummonerLeague($this->id);
+
+        return new League($league[0]);
+    }
+
+    /**
+     * Returns an array of the summoners leagues
+     * 
+     * @return array
+     */
+    public function getLeagues()
+    {
+        if (empty($this->leagues)) {
+            $leagues = self::$client->getSummonerLeague($this->id);
+
+            $this->leagues = array();
+            foreach ($leagues as $league) {
+                array_push($this->leagues, new League($league));
+            }
+        }
+
+        return $this->leagues;
     }
 
     /**
