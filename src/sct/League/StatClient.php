@@ -237,8 +237,8 @@ class StatClient
     public function getSummonerLeague($summonerId)
     {
         try {
-            $response = $this->client->get('v2.2/league/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
-
+            $response = $this->client->get('v2.3/league/by-summoner/' . $summonerId . '?api_key=' . $this->key)->send();
+            
             return $response->json();
         } catch (ClientErrorResponseException $e) {
             $this->exception($e->getResponse()->getStatusCode());

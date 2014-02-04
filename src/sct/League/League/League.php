@@ -11,6 +11,8 @@ class League
 	 */
 	public $name;
 
+	public $participantId;
+
 	/**
 	 * Name of the Queue Type
 	 * 
@@ -38,10 +40,10 @@ class League
 	 * @param integer $summonerId Summoner ID
 	 * @param array $league     API Response
 	 */
-	public function __construct($summonerId, $league)
+	public function __construct($league)
 	{
-		$league = $league[$summonerId];
 		$this->name = $league['name'];
+		$this->participantId = $league['participantId'];
 		$this->queue = $league['queue'];
 		$this->tier = $league['tier'];
 		$this->loadEntries($league['entries']);
